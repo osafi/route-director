@@ -43,6 +43,35 @@ describe('Service', () => {
     expect(routeMap.get('/xyz')).toEqual('https://example2.com');
   });
 
+  it('DELETE /routes prevents unauthorized requests', async () => {
+    const app = makeApp('user', 'pass');
+    await request(app).delete('/routes/test').expect(401);
+  });
+
+  it('DELETE /routes removes from the route map', async () => {
+    const routeMap = new Map([
+      ['/abc', 'https://example1.com'],
+      ['/xyz', 'https://example2.com'],
+    ]);
+    const app = makeApp('user123', 'pass123', routeMap);
+
+    await request(app)
+      .delete('/routes/abc')
+      .auth('user123', 'pass123')
+      .expect(200);
+    expect(routeMap.size).toEqual(1);
+    expect(routeMap.has('/abc')).toEqual(false);
+  });
+
+  it('DELETE /routes returns not found if the route did not exist', async () => {
+    const app = makeApp('user123', 'pass123');
+
+    await request(app)
+      .delete('/routes/abc')
+      .auth('user123', 'pass123')
+      .expect(404);
+  });
+
   it('GET /routes returns all configured routes', async () => {
     const routeMap = new Map([
       ['/abc', 'https://example1.com'],

@@ -1,5 +1,5 @@
 import bodyParser from 'body-parser';
-import express, { Request } from 'express';
+import express from 'express';
 import basicAuth from 'express-basic-auth';
 
 export const makeApp = (
@@ -15,7 +15,17 @@ export const makeApp = (
     users: { [adminUser]: adminPassword },
   });
 
-  app.post('/routes', auth, (request: Request, response) => {
+  app.delete('/routes/*', auth, (request, response) => {
+    const routeToRemove = request.path.replace('/routes', '');
+    const deleted = routeMap.delete(routeToRemove);
+    if (deleted) {
+      return response.status(200).send();
+    } else {
+      return response.status(404).send();
+    }
+  });
+
+  app.post('/routes', auth, (request, response) => {
     const path = request.body?.path;
     const target = request.body?.target;
 
