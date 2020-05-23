@@ -35,7 +35,7 @@ describe('Service', () => {
     await request(app)
       .post('/routes')
       .auth('user123', 'pass123')
-      .send({ path: '/xyz', target: 'https://example2.com' })
+      .send({ path: 'xyz', target: 'https://example2.com' })
       .expect(200);
 
     expect(routeMap.size).toEqual(2);

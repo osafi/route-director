@@ -18,11 +18,10 @@ export const makeApp = (
   app.delete('/routes/*', auth, (request, response) => {
     const routeToRemove = request.path.replace('/routes', '');
     const deleted = routeMap.delete(routeToRemove);
-    if (deleted) {
-      return response.status(200).send();
-    } else {
+    if (!deleted) {
       return response.status(404).send();
     }
+    return response.status(200).send();
   });
 
   app.post('/routes', auth, (request, response) => {
@@ -30,13 +29,15 @@ export const makeApp = (
     const target = request.body?.target;
 
     if (!path || !target) {
-      response
+      return response
         .status(400)
         .send("expecting object with 'path' and 'target' keys");
-    } else {
-      routeMap.set(request.body.path, request.body.target);
-      response.status(200).send();
     }
+
+    const route = path.startsWith('/') ? path : '/' + path;
+
+    routeMap.set(route, target);
+    return response.status(200).send();
   });
 
   app.get('/routes', (_, response) => {
@@ -46,10 +47,10 @@ export const makeApp = (
   app.get('*', (request, response) => {
     const redirect = routeMap.get(request.url);
     if (!redirect) {
-      response.status(400).send(`route '${request.url}' not configured`);
-    } else {
-      response.redirect(307, redirect);
+      return response.status(400).send(`route '${request.url}' not configured`);
     }
+
+    return response.redirect(307, redirect);
   });
 
   return app;
