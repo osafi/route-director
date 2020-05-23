@@ -1,4 +1,5 @@
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import express from 'express';
 import basicAuth from 'express-basic-auth';
 
@@ -9,6 +10,7 @@ export const makeApp = (
 ): express.Express => {
   const app = express();
 
+  app.use(cors());
   app.use(bodyParser.json());
 
   const auth = basicAuth({
