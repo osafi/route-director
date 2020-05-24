@@ -1,8 +1,8 @@
 import { makeApp } from './Service';
 
 const port = process.env.PORT || '8080';
-const user = process.env.ADMIN_USER || 'admin';
-const pass = process.env.ADMIN_PASS || 'admin123';
+const user = process.env.ROUTE_DIRECTOR_USER || 'admin';
+const pass = process.env.ROUTE_DIRECTOR_PASS || 'admin123';
 const app = makeApp(user, pass);
 
 app.listen(port, (err) => {
